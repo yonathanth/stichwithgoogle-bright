@@ -1,6 +1,8 @@
 import Link from "next/link";
 
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+  
   return (
     <footer className="border-t border-surface-dark-lighter bg-background-dark py-12 px-4 md:px-10 text-center md:text-left">
       <div className="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -19,7 +21,7 @@ export default function Footer() {
                 ></path>
               </svg>
             </div>
-            <h3 className="font-bold text-xl">Addis Fit</h3>
+            <h3 className="font-bold text-xl">Bright Gym</h3>
           </div>
           <p className="text-sm text-gray-400">
             Forging fitness and community in Addis Ababa since 2016.
@@ -72,7 +74,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="mt-12 pt-8 border-t border-surface-dark-lighter text-center text-sm text-gray-500">
-        © 2023 Addis Fit. All rights reserved.
+        © {currentYear} Bright Gym. All rights reserved.
       </div>
     </footer>
   );

@@ -312,7 +312,7 @@ export default function AboutPage() {
                     Ready to start your journey?
                   </h2>
                   <p className="text-white/80 text-lg max-w-xl">
-                    Join the Addis Fit family today. Sign up now and get your
+                    Join the Bright Gym family today. Sign up now and get your
                     first day pass absolutely free.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full justify-center">

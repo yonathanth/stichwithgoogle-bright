@@ -15,7 +15,7 @@ const notoSans = Noto_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "About Us - Addis Fit",
+  title: "Bright Gym - Premium Fitness in Addis Ababa",
   description: "Forging fitness and community in Addis Ababa",
 };
 

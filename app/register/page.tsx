@@ -1,0 +1,345 @@
+"use client";
+
+import { useState } from "react";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import Link from "next/link";
+import Image from "next/image";
+
+export default function RegisterPage() {
+  const [selectedPlan, setSelectedPlan] = useState<"monthly" | "quarterly" | "annual">("quarterly");
+  const [formData, setFormData] = useState({
+    fullName: "",
+    phoneNumber: "",
+    email: "",
+    terms: false,
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle form submission
+    console.log("Form submitted:", { ...formData, plan: selectedPlan });
+  };
+
+  return (
+    <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+      <Header />
+
+      <main className="flex flex-col lg:flex-row flex-1">
+        {/* Left Side - Image Section */}
+        <div className="relative w-full lg:w-5/12 min-h-[300px] lg:min-h-auto flex flex-col justify-end p-8 lg:p-16 overflow-hidden lg:sticky lg:top-[73px] lg:h-[calc(100vh-73px)]">
+          <div
+            className="absolute inset-0 bg-cover bg-center z-0"
+            style={{
+              backgroundImage:
+                'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDKIakc71G9TxnA2fiBRFl9eVXXN7tDkG7zXh-08iUqdqwb32P_fjRAyglNsvtqExpLvdGuqL6Hg7VMwF7kp7c43uvDL_sr1Ysm6c7TQ_kw9dUK9w1Unspya48XA71UjoIofDIXjcwQflkkfNuG_esqNq5XIXstPXuZyMiNb1HS_lvPsvL-tSUM3B5kcWaC1Q8s1osFa8oHGcdJcDkgIqCo6UCzi3Pr6crZfDWEWKclzqzefRZzJ4LaQOitMFyOkf3I0V88f719OJQ")',
+            }}
+          ></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent z-0"></div>
+          <div className="relative z-10 text-white">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-4">
+              <span className="material-symbols-outlined text-white text-sm">
+                bolt
+              </span>
+              <span className="text-xs font-bold text-white tracking-wide uppercase">
+                Join the movement
+              </span>
+            </div>
+            <h1 className="text-4xl lg:text-5xl font-black leading-tight tracking-tight mb-4">
+              Unlock Your <br />
+              <span className="text-white/70">True Potential</span>
+            </h1>
+            <p className="text-white/60 text-lg lg:text-xl font-light mb-6">
+              Premium facilities, expert trainers, affordable plans. Join Addis
+              Ababa&apos;s top fitness community today.
+            </p>
+            <div className="flex items-center gap-4 mt-4">
+              <div className="flex -space-x-3">
+                <Image
+                  alt="Member Avatar"
+                  className="w-10 h-10 rounded-full border-2 border-black"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWTN1vkSrpnUduzhuR2TLFOF81e8I_vb-BWKIE-4pRrAoNASwKJmxPrYtnU1dAbnG3gmjBuSsQTcWjMyi6v6XOfagIkRWocpfmpTGDMUAvqCvsCRSM-ie7zXz2sCUcqmFcf28Qt60eBcrerwUMEcKy8SxPysD1aMxJiOFoKwoeI31BPCHcb6Ku10aiS7r_ZdFZV5FL7oIEozM3IGlIz16mEw1MyiIoyJOOmTPX9wRz6yPlw8DGxoLcOnrStyvKrHD2uJTO2QPkAZI"
+                  width={40}
+                  height={40}
+                />
+                <Image
+                  alt="Member Avatar"
+                  className="w-10 h-10 rounded-full border-2 border-black"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6FvqEzy6TZn00oCHUqTbeI90ZIAa2Lg68cA33URBvuuVVq8yjzbYgrkmdlskwgS2-uoRNXdFbUxiEEd_fdOpwz4a-Le0Z3AplgDKoCOTjqpGvj9kfkaYdT1Kltf-w_Swk6tvZtmrS4OG8xbXVucLX1XDa7R_MnhZDNF3nUQV5Fi8Nr_rVoPqig7JvnMVI3R_Qw8J_7U5Z8Nrj-c_eGrPJiImMPIwsm5KqgVOo7kThnPtxSqs69PGt8gqMLkoETqeqmoCEsfwEoxs"
+                  width={40}
+                  height={40}
+                />
+                <Image
+                  alt="Member Avatar"
+                  className="w-10 h-10 rounded-full border-2 border-black"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCB6nkJ0c6-8TClorG1G2SfsY3H01XqwNetvemz7d-ius-Mn7S4GeLeUsWhWUbVOEDWjNstM3idOTWU6y7XoH59MbUSH_BI08qCp4dHnAxTa1_15xgnjsld4xznHMo77vzYlZj5bM-pSgGocGfOLq1PYW8oTTxxxnZ5mGvh-0c4GdEkMhILeJrwIKhLN-bTf6Ojx3DV6soalatLVxky3CUhGPfam1VP-1BQTn3VOvcHTKcxNaLQ8JTgdgwoNQI-p_YUmYl83VbEsSw"
+                  width={40}
+                  height={40}
+                />
+                <div className="w-10 h-10 rounded-full border-2 border-black bg-white flex items-center justify-center text-black font-bold text-xs">
+                  +500
+                </div>
+              </div>
+              <p className="text-sm font-medium text-white/80">
+                Active members in Addis
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side - Form Section */}
+        <div className="w-full lg:w-7/12 flex flex-col justify-center px-6 py-12 lg:px-20 lg:py-16 bg-background-light">
+          <div className="max-w-2xl mx-auto w-full">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2">
+                Create your account
+              </h2>
+              <p className="text-white/60">
+                Fill in your details to get started with your fitness journey.
+              </p>
+            </div>
+
+            <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <label className="flex flex-col gap-2">
+                  <span className="text-sm font-medium text-white/80">
+                    Full Name
+                  </span>
+                  <div className="relative">
+                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-white/40 text-xl">
+                      person
+                    </span>
+                    <input
+                      className="w-full h-12 pl-12 pr-4 rounded-lg bg-surface-dark border border-surface-dark-lighter text-white focus:ring-2 focus:ring-primary focus:border-transparent placeholder-white/40 transition-all"
+                      placeholder="e.g. Abebe Bikila"
+                      type="text"
+                      name="fullName"
+                      value={formData.fullName}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                </label>
+
+                <label className="flex flex-col gap-2">
+                  <span className="text-sm font-medium text-white/80">
+                    Phone Number
+                  </span>
+                  <div className="relative">
+                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-white/40 text-xl">
+                      call
+                    </span>
+                    <input
+                      className="w-full h-12 pl-12 pr-4 rounded-lg bg-surface-dark border border-surface-dark-lighter text-white focus:ring-2 focus:ring-primary focus:border-transparent placeholder-white/40 transition-all"
+                      placeholder="+251 911 000 000"
+                      type="tel"
+                      name="phoneNumber"
+                      value={formData.phoneNumber}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                </label>
+              </div>
+
+              <label className="flex flex-col gap-2">
+                <span className="text-sm font-medium text-white/80">
+                  Email Address
+                </span>
+                <div className="relative">
+                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-white/40 text-xl">
+                    mail
+                  </span>
+                  <input
+                    className="w-full h-12 pl-12 pr-4 rounded-lg bg-surface-dark border border-surface-dark-lighter text-white focus:ring-2 focus:ring-primary focus:border-transparent placeholder-white/40 transition-all"
+                    placeholder="name@example.com"
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+              </label>
+
+              <div className="mt-4">
+                <label className="text-sm font-medium text-white/80 mb-4 block">
+                  Select Package
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Monthly Plan */}
+                  <label className="group relative cursor-pointer">
+                    <input
+                      className="peer sr-only"
+                      name="plan"
+                      type="radio"
+                      value="monthly"
+                      checked={selectedPlan === "monthly"}
+                      onChange={() => setSelectedPlan("monthly")}
+                    />
+                    <div className="p-4 rounded-xl border-2 border-surface-dark-lighter bg-surface-dark peer-checked:border-primary peer-checked:bg-surface-dark-lighter/50 hover:border-white/30 transition-all h-full flex flex-col">
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="text-sm font-bold text-white/60 uppercase tracking-wider">
+                          Monthly
+                        </span>
+                        <div className="w-5 h-5 rounded-full border-2 border-white/40 peer-checked:border-primary peer-checked:bg-primary transition-colors flex items-center justify-center">
+                          <div className="w-2.5 h-2.5 bg-black rounded-full opacity-0 peer-checked:opacity-100"></div>
+                        </div>
+                      </div>
+                      <div className="mt-auto">
+                        <span className="text-2xl font-bold text-white">
+                          2,500
+                        </span>
+                        <span className="text-xs text-white/60 font-medium">
+                          {" "}
+                          ETB / mo
+                        </span>
+                      </div>
+                    </div>
+                  </label>
+
+                  {/* Quarterly Plan - Featured */}
+                  <label className="group relative cursor-pointer">
+                    <input
+                      className="peer sr-only"
+                      name="plan"
+                      type="radio"
+                      value="quarterly"
+                      checked={selectedPlan === "quarterly"}
+                      onChange={() => setSelectedPlan("quarterly")}
+                    />
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-black text-[10px] font-bold px-2 py-0.5 rounded-full z-10 uppercase tracking-wide">
+                      Best Value
+                    </div>
+                    <div className="p-4 rounded-xl border-2 border-primary bg-surface-dark-lighter/50 peer-checked:border-primary peer-checked:bg-surface-dark-lighter/70 hover:border-primary/80 transition-all h-full flex flex-col shadow-lg shadow-primary/10">
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="text-sm font-bold text-primary uppercase tracking-wider">
+                          Quarterly
+                        </span>
+                        <div className="w-5 h-5 rounded-full border-2 border-primary bg-primary flex items-center justify-center">
+                          <div className="w-2.5 h-2.5 bg-black rounded-full"></div>
+                        </div>
+                      </div>
+                      <div className="mt-auto">
+                        <span className="text-2xl font-bold text-white">
+                          6,500
+                        </span>
+                        <span className="text-xs text-white/60 font-medium">
+                          {" "}
+                          ETB / 3mo
+                        </span>
+                      </div>
+                    </div>
+                  </label>
+
+                  {/* Annual Plan */}
+                  <label className="group relative cursor-pointer">
+                    <input
+                      className="peer sr-only"
+                      name="plan"
+                      type="radio"
+                      value="annual"
+                      checked={selectedPlan === "annual"}
+                      onChange={() => setSelectedPlan("annual")}
+                    />
+                    <div className="p-4 rounded-xl border-2 border-surface-dark-lighter bg-surface-dark peer-checked:border-primary peer-checked:bg-surface-dark-lighter/50 hover:border-white/30 transition-all h-full flex flex-col">
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="text-sm font-bold text-white/60 uppercase tracking-wider">
+                          Annual
+                        </span>
+                        <div className="w-5 h-5 rounded-full border-2 border-white/40 peer-checked:border-primary peer-checked:bg-primary transition-colors flex items-center justify-center">
+                          <div className="w-2.5 h-2.5 bg-black rounded-full opacity-0 peer-checked:opacity-100"></div>
+                        </div>
+                      </div>
+                      <div className="mt-auto">
+                        <span className="text-2xl font-bold text-white">
+                          24,000
+                        </span>
+                        <span className="text-xs text-white/60 font-medium">
+                          {" "}
+                          ETB / yr
+                        </span>
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 mt-2">
+                <div className="flex items-center h-5">
+                  <input
+                    className="w-5 h-5 rounded border-surface-dark-lighter bg-surface-dark text-primary focus:ring-primary focus:ring-offset-background-dark"
+                    id="terms"
+                    type="checkbox"
+                    name="terms"
+                    checked={formData.terms}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <label className="text-sm text-white/60" htmlFor="terms">
+                  I agree to the{" "}
+                  <Link
+                    className="text-primary hover:underline font-medium"
+                    href="#"
+                  >
+                    Terms & Conditions
+                  </Link>{" "}
+                  and{" "}
+                  <Link
+                    className="text-primary hover:underline font-medium"
+                    href="#"
+                  >
+                    Privacy Policy
+                  </Link>
+                  .
+                </label>
+              </div>
+
+              <button
+                className="mt-4 w-full h-14 bg-primary hover:bg-primary/90 text-black font-bold text-lg rounded-lg shadow-lg shadow-primary/20 hover:shadow-xl transition-all flex items-center justify-center gap-2 group"
+                type="submit"
+              >
+                <span>Register Today</span>
+                <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
+                  arrow_forward
+                </span>
+              </button>
+
+              <div className="text-center mt-2">
+                <p className="text-sm text-white/60">
+                  Already have an account?{" "}
+                  <Link
+                    className="text-primary font-bold hover:underline"
+                    href="#"
+                  >
+                    Log in
+                  </Link>
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
+
+
+
+
+
+
+
+
+
