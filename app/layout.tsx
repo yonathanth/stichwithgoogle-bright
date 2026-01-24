@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Lexend, Noto_Sans } from "next/font/google";
 import "./globals.css";
+import { MultipleSchemaComponent } from "@/lib/schema-component";
+import { organizationSchema, localBusinessSchema } from "@/lib/schemas";
 
 const lexend = Lexend({
   variable: "--font-display",
@@ -15,8 +17,42 @@ const notoSans = Noto_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Bright Gym - Premium Fitness in Addis Ababa",
-  description: "Forging fitness and community in Addis Ababa",
+  title: "Bright Gym - Premium Fitness in Addis Ababa | Membership Plans & Classes",
+  description: "Forging fitness and community in Addis Ababa. Join 1,200+ members at Bright Gym with premium equipment, expert trainers, and 24/7 access. Get started today!",
+  keywords: [
+    "gym in Addis Ababa",
+    "fitness center",
+    "membership plans",
+    "personal training",
+    "group classes",
+    "weightlifting",
+    "cardio equipment",
+  ],
+  robots: "index, follow",
+  authors: [{ name: "Bright Gym" }],
+  openGraph: {
+    type: "website",
+    url: "https://brightgymfitness.com",
+    title: "Bright Gym - Premium Fitness in Addis Ababa",
+    description: "Transform your body and life at Addis Ababa's premier fitness center",
+    images: [
+      {
+        url: "https://brightgymfitness.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Bright Gym - Premium Fitness Equipment",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@brightgym",
+    creator: "@brightgym",
+    images: ["https://brightgymfitness.com/og-image.jpg"],
+  },
+  alternates: {
+    canonical: "https://brightgymfitness.com",
+  },
 };
 
 export default function RootLayout({
@@ -27,9 +63,16 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
+        {/* Manifest for PWA */}
+        <link rel="manifest" href="/manifest.webmanifest" />
+        {/* Material Symbols Font */}
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
+        />
+        {/* JSON-LD Structured Data */}
+        <MultipleSchemaComponent
+          schemas={[organizationSchema(), localBusinessSchema()]}
         />
       </head>
       <body

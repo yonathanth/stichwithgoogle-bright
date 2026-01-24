@@ -2,6 +2,19 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Link from "next/link";
 import Image from "next/image";
+import { SchemaComponent } from "@/lib/schema-component";
+import { reviewSchema, breadcrumbSchema } from "@/lib/schemas";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Home - Bright Gym",
+  description: "Transform your body and life at Bright Gym. Premium equipment, expert trainers, and a supportive community await.",
+  openGraph: {
+    title: "Bright Gym - Transform Your Body, Transform Your Life",
+    description: "Join Addis Ababa's premier fitness center with 1,200+ active members",
+    url: "https://brightgymfitness.com",
+  },
+};
 
 export default function Home() {
   return (
@@ -293,6 +306,44 @@ export default function Home() {
       </main>
 
       <Footer />
+
+      {/* Breadcrumb Schema */}
+      <SchemaComponent
+        schema={breadcrumbSchema([
+          { name: "Home", url: "https://brightgymfitness.com" },
+        ])}
+      />
+
+      {/* Review Schemas */}
+      <SchemaComponent
+        schema={reviewSchema({
+          author: "Abebe Kebede",
+          rating: 5,
+          reviewBody:
+            "The trainers here are incredible. They pushed me to achieve goals I never thought possible. Best investment in myself I've ever made.",
+          reviewDate: "2022-03-15",
+        })}
+      />
+
+      <SchemaComponent
+        schema={reviewSchema({
+          author: "Sara Tesfaye",
+          rating: 5,
+          reviewBody:
+            "The 24/7 access is perfect for my schedule. The equipment is always clean and well-maintained. Highly recommend!",
+          reviewDate: "2023-06-20",
+        })}
+      />
+
+      <SchemaComponent
+        schema={reviewSchema({
+          author: "Michael Alemu",
+          rating: 5,
+          reviewBody:
+            "The community here is amazing. Everyone is supportive and the atmosphere is motivating. I look forward to every workout!",
+          reviewDate: "2021-11-10",
+        })}
+      />
     </div>
   );
 }

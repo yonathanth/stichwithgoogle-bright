@@ -15,6 +15,7 @@ const navItems: NavItem[] = [
   { name: 'Attendance', href: '/admin/attendance', icon: 'fact_check' },
   { name: 'Transactions', href: '/admin/transactions', icon: 'payments' },
   { name: 'Services', href: '/admin/services', icon: 'category' },
+  { name: 'Potential Customers', href: '/admin/potential-customers', icon: 'person_add' },
   { name: 'SMS', href: '/admin/sms', icon: 'sms' },
 ];
 

@@ -1,6 +1,27 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Link from "next/link";
+import { SchemaComponent } from "@/lib/schema-component";
+import { breadcrumbSchema } from "@/lib/schemas";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About Bright Gym - Our Story, Team & Mission | Premium Fitness in Addis Ababa",
+  description: "Discover the story of Bright Gym. Learn about our mission to provide premium fitness facilities, expert trainers, and inclusive community in Addis Ababa since 2016.",
+  keywords: [
+    "about Bright Gym",
+    "gym owners",
+    "fitness trainers",
+    "fitness center history",
+    "gym team",
+    "our mission",
+  ],
+  openGraph: {
+    title: "About Bright Gym - Forging Fitness in Addis",
+    description: "Learn about our journey creating a premium, energetic fitness community",
+    url: "https://brightgymfitness.com/about",
+  },
+};
 
 export default function AboutPage() {
   return (
@@ -330,6 +351,14 @@ export default function AboutPage() {
         </main>
 
         <Footer />
+
+        {/* Breadcrumb Schema */}
+        <SchemaComponent
+          schema={breadcrumbSchema([
+            { name: "Home", url: "https://brightgymfitness.com" },
+            { name: "About", url: "https://brightgymfitness.com/about" },
+          ])}
+        />
       </div>
     </div>
   );

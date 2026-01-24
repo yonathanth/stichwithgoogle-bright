@@ -7,9 +7,11 @@ import {
   membersApi,
   attendanceApi,
   transactionsApi,
+  healthMetricsApi,
   Member,
   Attendance,
   Transaction,
+  HealthMetric,
   PaginatedResponse,
 } from '@/lib/api';
 import SmsSendModal from '@/components/admin/SmsSendModal';
@@ -24,8 +26,9 @@ export default function MemberDetailPage({ params }: Props) {
   const [member, setMember] = useState<Member | null>(null);
   const [attendance, setAttendance] = useState<PaginatedResponse<Attendance> | null>(null);
   const [transactions, setTransactions] = useState<PaginatedResponse<Transaction> | null>(null);
+  const [healthMetrics, setHealthMetrics] = useState<PaginatedResponse<HealthMetric> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'attendance' | 'transactions'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'attendance' | 'transactions' | 'health'>('overview');
   const [isSmsModalOpen, setIsSmsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -33,14 +36,16 @@ export default function MemberDetailPage({ params }: Props) {
       try {
         setIsLoading(true);
         const memberId = parseInt(id);
-        const [memberData, attendanceData, transactionsData] = await Promise.all([
+        const [memberData, attendanceData, transactionsData, healthMetricsData] = await Promise.all([
           membersApi.getOne(memberId),
           attendanceApi.getByMember(memberId, { limit: 10 }),
           transactionsApi.getByMember(memberId, { limit: 10 }),
+          healthMetricsApi.getByMember(memberId, { limit: 10 }),
         ]);
         setMember(memberData);
         setAttendance(attendanceData);
         setTransactions(transactionsData);
+        setHealthMetrics(healthMetricsData);
       } catch (err) {
         console.error('Failed to fetch member:', err);
       } finally {
@@ -147,7 +152,7 @@ export default function MemberDetailPage({ params }: Props) {
       {/* Tabs */}
       <div className="border-b border-surface-dark-lighter">
         <nav className="flex gap-6">
-          {(['overview', 'attendance', 'transactions'] as const).map((tab) => (
+          {(['overview', 'attendance', 'transactions', 'health'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -248,6 +253,22 @@ export default function MemberDetailPage({ params }: Props) {
                   <p className="text-white">{formatDate(member.registrationDate)}</p>
                 </div>
               </div>
+              {member.membershipTier && (
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-white/40">workspace_premium</span>
+                  <div>
+                    <p className="text-white/40 text-xs">Membership Tier</p>
+                    <span className={`inline-flex items-center px-2 py-1 rounded text-sm font-medium border capitalize ${
+                      member.membershipTier === 'silver' ? 'bg-gray-500/10 text-gray-400 border-gray-500/20' :
+                      member.membershipTier === 'gold' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' :
+                      member.membershipTier === 'platinum' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
+                      'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                    }`}>
+                      {member.membershipTier}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -374,6 +395,158 @@ export default function MemberDetailPage({ params }: Props) {
                   </span>
                 </div>
               ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'health' && (
+        <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter overflow-hidden">
+          <div className="p-4 border-b border-surface-dark-lighter">
+            <h2 className="text-white font-semibold">Health Metrics History</h2>
+            <p className="text-white/40 text-sm">
+              {healthMetrics?.meta.total || 0} total records
+            </p>
+          </div>
+          <div className="divide-y divide-surface-dark-lighter">
+            {healthMetrics?.data.length === 0 ? (
+              <div className="p-8 text-center text-white/40">
+                <span className="material-symbols-outlined text-4xl mb-2 block opacity-50">
+                  monitoring
+                </span>
+                No health metrics recorded
+              </div>
+            ) : (
+              healthMetrics?.data.map((metric) => {
+                const hasMetrics = [
+                  metric.weight,
+                  metric.bmi,
+                  metric.bodyFatPercent,
+                  metric.muscleMass,
+                  metric.leanBodyMass,
+                  metric.boneMass,
+                  metric.skeletalMuscleMass,
+                  metric.visceralFat,
+                  metric.subcutaneousFatPercent,
+                  metric.proteinPercent,
+                  metric.bmr,
+                  metric.bodyAge,
+                  metric.heartRate,
+                ].some(v => v !== null && v !== undefined);
+
+                return (
+                  <div
+                    key={metric.id}
+                    className="p-6 border-b border-surface-dark-lighter last:border-b-0"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <p className="text-white font-medium">
+                          {new Date(metric.measuredAt).toLocaleDateString('en-GB', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
+                        </p>
+                        <p className="text-white/40 text-xs mt-1">
+                          {new Date(metric.measuredAt).toLocaleTimeString('en-GB', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                    {hasMetrics && (
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                        {metric.weight !== null && metric.weight !== undefined && (
+                          <div className="bg-surface-dark-lighter/30 rounded-lg p-3 border border-surface-dark-lighter/50">
+                            <p className="text-white/40 text-xs mb-1">Weight</p>
+                            <p className="text-white font-semibold">{metric.weight.toFixed(1)} kg</p>
+                          </div>
+                        )}
+                        {metric.bmi !== null && metric.bmi !== undefined && (
+                          <div className="bg-surface-dark-lighter/30 rounded-lg p-3 border border-surface-dark-lighter/50">
+                            <p className="text-white/40 text-xs mb-1">BMI</p>
+                            <p className="text-white font-semibold">{metric.bmi.toFixed(1)}</p>
+                          </div>
+                        )}
+                        {metric.bodyFatPercent !== null && metric.bodyFatPercent !== undefined && (
+                          <div className="bg-surface-dark-lighter/30 rounded-lg p-3 border border-surface-dark-lighter/50">
+                            <p className="text-white/40 text-xs mb-1">Body Fat</p>
+                            <p className="text-white font-semibold">{metric.bodyFatPercent.toFixed(1)}%</p>
+                          </div>
+                        )}
+                        {metric.muscleMass !== null && metric.muscleMass !== undefined && (
+                          <div className="bg-surface-dark-lighter/30 rounded-lg p-3 border border-surface-dark-lighter/50">
+                            <p className="text-white/40 text-xs mb-1">Muscle Mass</p>
+                            <p className="text-white font-semibold">{metric.muscleMass.toFixed(1)} kg</p>
+                          </div>
+                        )}
+                        {metric.leanBodyMass !== null && metric.leanBodyMass !== undefined && (
+                          <div className="bg-surface-dark-lighter/30 rounded-lg p-3 border border-surface-dark-lighter/50">
+                            <p className="text-white/40 text-xs mb-1">Lean Body Mass</p>
+                            <p className="text-white font-semibold">{metric.leanBodyMass.toFixed(1)} kg</p>
+                          </div>
+                        )}
+                        {metric.boneMass !== null && metric.boneMass !== undefined && (
+                          <div className="bg-surface-dark-lighter/30 rounded-lg p-3 border border-surface-dark-lighter/50">
+                            <p className="text-white/40 text-xs mb-1">Bone Mass</p>
+                            <p className="text-white font-semibold">{metric.boneMass.toFixed(1)} kg</p>
+                          </div>
+                        )}
+                        {metric.skeletalMuscleMass !== null && metric.skeletalMuscleMass !== undefined && (
+                          <div className="bg-surface-dark-lighter/30 rounded-lg p-3 border border-surface-dark-lighter/50">
+                            <p className="text-white/40 text-xs mb-1">Skeletal Muscle</p>
+                            <p className="text-white font-semibold">{metric.skeletalMuscleMass.toFixed(1)} kg</p>
+                          </div>
+                        )}
+                        {metric.visceralFat !== null && metric.visceralFat !== undefined && (
+                          <div className="bg-surface-dark-lighter/30 rounded-lg p-3 border border-surface-dark-lighter/50">
+                            <p className="text-white/40 text-xs mb-1">Visceral Fat</p>
+                            <p className="text-white font-semibold">{metric.visceralFat}</p>
+                          </div>
+                        )}
+                        {metric.subcutaneousFatPercent !== null && metric.subcutaneousFatPercent !== undefined && (
+                          <div className="bg-surface-dark-lighter/30 rounded-lg p-3 border border-surface-dark-lighter/50">
+                            <p className="text-white/40 text-xs mb-1">Subcutaneous Fat</p>
+                            <p className="text-white font-semibold">{metric.subcutaneousFatPercent.toFixed(1)}%</p>
+                          </div>
+                        )}
+                        {metric.proteinPercent !== null && metric.proteinPercent !== undefined && (
+                          <div className="bg-surface-dark-lighter/30 rounded-lg p-3 border border-surface-dark-lighter/50">
+                            <p className="text-white/40 text-xs mb-1">Protein</p>
+                            <p className="text-white font-semibold">{metric.proteinPercent.toFixed(1)}%</p>
+                          </div>
+                        )}
+                        {metric.bmr !== null && metric.bmr !== undefined && (
+                          <div className="bg-surface-dark-lighter/30 rounded-lg p-3 border border-surface-dark-lighter/50">
+                            <p className="text-white/40 text-xs mb-1">BMR</p>
+                            <p className="text-white font-semibold">{metric.bmr} kcal</p>
+                          </div>
+                        )}
+                        {metric.bodyAge !== null && metric.bodyAge !== undefined && (
+                          <div className="bg-surface-dark-lighter/30 rounded-lg p-3 border border-surface-dark-lighter/50">
+                            <p className="text-white/40 text-xs mb-1">Body Age</p>
+                            <p className="text-white font-semibold">{metric.bodyAge} years</p>
+                          </div>
+                        )}
+                        {metric.heartRate !== null && metric.heartRate !== undefined && (
+                          <div className="bg-surface-dark-lighter/30 rounded-lg p-3 border border-surface-dark-lighter/50">
+                            <p className="text-white/40 text-xs mb-1">Heart Rate</p>
+                            <p className="text-white font-semibold">{metric.heartRate} bpm</p>
+                          </div>
+                        )}
+                        {metric.bodyType && (
+                          <div className="bg-surface-dark-lighter/30 rounded-lg p-3 border border-surface-dark-lighter/50">
+                            <p className="text-white/40 text-xs mb-1">Body Type</p>
+                            <p className="text-white font-semibold">{metric.bodyType}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })
             )}
           </div>
         </div>

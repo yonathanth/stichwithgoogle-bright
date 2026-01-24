@@ -1,6 +1,6 @@
 // API Client with typed responses for Gym API
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.brightgymfitness.com';
 
 // Types based on gym-api DTOs
 export interface AdminProfile {
@@ -43,6 +43,7 @@ export interface Member {
   registrationDate: string;
   emergencyContact?: string;
   notes?: string;
+  membershipTier?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -196,6 +197,36 @@ export interface TransactionQuery extends PaginationQuery {
 export interface ServiceQuery extends PaginationQuery {
   isActive?: boolean;
   category?: string;
+}
+
+// Health Metrics Types
+export interface HealthMetric {
+  id: number;
+  localId: number;
+  memberId: number;
+  measuredAt: string;
+  weight?: number | null;
+  bmi?: number | null;
+  bodyFatPercent?: number | null;
+  heartRate?: number | null;
+  muscleMass?: number | null;
+  leanBodyMass?: number | null;
+  boneMass?: number | null;
+  skeletalMuscleMass?: number | null;
+  visceralFat?: number | null;
+  subcutaneousFatPercent?: number | null;
+  proteinPercent?: number | null;
+  bmr?: number | null;
+  bodyAge?: number | null;
+  bodyType?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HealthMetricQuery extends PaginationQuery {
+  memberId?: number;
+  startDate?: string;
+  endDate?: string;
 }
 
 // SMS Types
@@ -372,6 +403,48 @@ export const attendanceApi = {
     ),
 };
 
+// Potential Customer Types
+export interface PotentialCustomer {
+  id: number;
+  fullName: string;
+  phoneNumber: string;
+  email?: string | null;
+  registeredAt: string;
+  status: 'pending' | 'converted' | 'ignored';
+  convertedAt?: string | null;
+  convertedToMemberId?: number | null;
+  serviceId?: number | null;
+  notes?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreatePotentialCustomerInput {
+  fullName: string;
+  phoneNumber: string;
+  email?: string;
+  serviceId?: number;
+  notes?: string;
+}
+
+// Potential Customers API
+export const potentialCustomersApi = {
+  register: (input: CreatePotentialCustomerInput) =>
+    apiFetch<PotentialCustomer>('/api/public/register', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
+  
+  getPotentialCustomers: (
+    status?: 'pending' | 'converted' | 'ignored',
+    limit?: number,
+    offset?: number
+  ) =>
+    apiFetch<{ data: PotentialCustomer[]; total: number }>(
+      `/api/admin/potential-customers${buildQueryString({ status, limit, offset } as Record<string, unknown>)}`
+    ),
+};
+
 // Transactions API
 export const transactionsApi = {
   getAll: (query: TransactionQuery = {}) =>
@@ -400,6 +473,17 @@ export const servicesApi = {
 // Sync API
 export const syncApi = {
   getLastSync: () => apiFetch<{ lastSyncAt: string | null }>('/api/sync/last-sync'),
+};
+
+// Health Metrics API
+export const healthMetricsApi = {
+  getByMember: (memberId: number, query: HealthMetricQuery = {}) =>
+    apiFetch<PaginatedResponse<HealthMetric>>(
+      `/api/health-metrics/member/${memberId}${buildQueryString(query as Record<string, unknown>)}`
+    ),
+  
+  getLatest: (memberId: number) =>
+    apiFetch<HealthMetric | null>(`/api/health-metrics/member/${memberId}/latest`),
 };
 
 // SMS API

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Link from "next/link";
 import Image from "next/image";
+import { potentialCustomersApi, servicesApi, type Service } from "@/lib/api";
 
 export default function RegisterPage() {
   const [selectedPlan, setSelectedPlan] = useState<"monthly" | "quarterly" | "annual">("quarterly");
@@ -12,21 +13,69 @@ export default function RegisterPage() {
     fullName: "",
     phoneNumber: "",
     email: "",
+    serviceId: "",
     terms: false,
   });
+  const [services, setServices] = useState<Service[]>([]);
+  const [loadingServices, setLoadingServices] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+  useEffect(() => {
+    const fetchServices = async () => {
+      setLoadingServices(true);
+      try {
+        const response = await servicesApi.getAll({ isActive: true, limit: 100 });
+        setServices(response.data || []);
+      } catch (err) {
+        console.error("Failed to fetch services:", err);
+      } finally {
+        setLoadingServices(false);
+      }
+    };
+    fetchServices();
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Form submitted:", { ...formData, plan: selectedPlan });
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      await potentialCustomersApi.register({
+        fullName: formData.fullName,
+        phoneNumber: formData.phoneNumber,
+        email: formData.email || undefined,
+        serviceId: formData.serviceId ? Number(formData.serviceId) : undefined,
+        notes: `Selected plan: ${selectedPlan}`,
+      });
+
+      setSuccess(true);
+      // Reset form
+      setFormData({
+        fullName: "",
+        phoneNumber: "",
+        email: "",
+        serviceId: "",
+        terms: false,
+      });
+      setSelectedPlan("quarterly");
+    } catch (err: any) {
+      setError(err.message || "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -170,6 +219,35 @@ export default function RegisterPage() {
                 </div>
               </label>
 
+              <label className="flex flex-col gap-2">
+                <span className="text-sm font-medium text-white/80">
+                  Service Package
+                </span>
+                <div className="relative">
+                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-white/40 text-xl">
+                    category
+                  </span>
+                  <select
+                    className="w-full h-12 pl-12 pr-4 rounded-lg bg-surface-dark border border-surface-dark-lighter text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all appearance-none cursor-pointer"
+                    name="serviceId"
+                    value={formData.serviceId}
+                    onChange={handleInputChange}
+                    required
+                    disabled={loadingServices}
+                  >
+                    <option value="">Select a service package</option>
+                    {services.map((service) => (
+                      <option key={service.id} value={service.id}>
+                        {service.name} - {service.price} ETB
+                      </option>
+                    ))}
+                  </select>
+                  <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none">
+                    expand_more
+                  </span>
+                </div>
+              </label>
+
               <div className="mt-4">
                 <label className="text-sm font-medium text-white/80 mb-4 block">
                   Select Package
@@ -304,14 +382,33 @@ export default function RegisterPage() {
                 </label>
               </div>
 
+              {error && (
+                <div className="mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+                  {error}
+                </div>
+              )}
+
+              {success && (
+                <div className="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 text-sm">
+                  Registration successful! We'll contact you soon.
+                </div>
+              )}
+
               <button
-                className="mt-4 w-full h-14 bg-primary hover:bg-primary/90 text-black font-bold text-lg rounded-lg shadow-lg shadow-primary/20 hover:shadow-xl transition-all flex items-center justify-center gap-2 group"
+                className="mt-4 w-full h-14 bg-primary hover:bg-primary/90 text-black font-bold text-lg rounded-lg shadow-lg shadow-primary/20 hover:shadow-xl transition-all flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
                 type="submit"
+                disabled={loading}
               >
-                <span>Register Today</span>
-                <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
-                  arrow_forward
-                </span>
+                {loading ? (
+                  <span>Registering...</span>
+                ) : (
+                  <>
+                    <span>Register Today</span>
+                    <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
+                      arrow_forward
+                    </span>
+                  </>
+                )}
               </button>
 
               <div className="text-center mt-2">
