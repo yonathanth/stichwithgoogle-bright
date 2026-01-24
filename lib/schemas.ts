@@ -116,7 +116,7 @@ export const localBusinessSchema = (): BaseSchema & {
   }[];
   openingHoursSpecification: {
     "@type": "OpeningHoursSpecification";
-    dayOfWeek: string;
+    dayOfWeek: string | string[];
     opens: string;
     closes: string;
   }[];

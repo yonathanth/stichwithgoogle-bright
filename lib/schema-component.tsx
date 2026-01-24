@@ -4,7 +4,7 @@
  */
 
 interface SchemaComponentProps {
-  schema: Record<string, unknown>;
+  schema: Record<string, any>;
 }
 
 export function SchemaComponent({ schema }: SchemaComponentProps) {
@@ -24,7 +24,7 @@ export function SchemaComponent({ schema }: SchemaComponentProps) {
 export function MultipleSchemaComponent({
   schemas,
 }: {
-  schemas: Record<string, unknown>[];
+  schemas: Record<string, any>[];
 }) {
   return (
     <>
